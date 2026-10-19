@@ -1,10 +1,23 @@
 {
   "name": "instagram-fa",
   "description": "بستهٔ فارسی اینستاگرام برای Claude: ۱۳ اسکیل مستقل از موضوع، از شناسنامهٔ پیج و برنامهٔ هفتگی تا ساخت کاروسل، استوری و ریلز با تصویر فارسی، کپشن، انسانی‌ساز فارسی و دروازهٔ تأیید پیش از انتشار.",
-  "version": "1.0.0",
-  "author": {"name": "hafamfamily", "url": "https://github.com/hafamfamily"},
+  "version": "1.1.0",
+  "author": {
+    "name": "hafamfamily",
+    "url": "https://github.com/hafamfamily"
+  },
   "homepage": "https://github.com/hafamfamily/instagram-fa",
   "repository": "https://github.com/hafamfamily/instagram-fa",
   "license": "MIT",
-  "keywords": ["instagram", "persian", "farsi", "reels", "stories", "carousel", "content", "اینستاگرام", "فارسی"]
+  "keywords": [
+    "instagram",
+    "persian",
+    "farsi",
+    "reels",
+    "stories",
+    "carousel",
+    "content",
+    "اینستاگرام",
+    "فارسی"
+  ]
 }
