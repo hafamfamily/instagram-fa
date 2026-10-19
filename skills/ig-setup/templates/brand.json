@@ -1,0 +1,14 @@
+{
+  "name": "",
+  "handle": "@your.page",
+  "theme": "light",
+  "bg": "#FBF7F1",
+  "surface": "#FFFFFF",
+  "text": "#1E2430",
+  "muted": "#6B7280",
+  "primary": "#0F766E",
+  "accent": "#F59E0B",
+  "on_primary": "#FFFFFF",
+  "digits": "fa",
+  "corner": 28
+}

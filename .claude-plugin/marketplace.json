@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "instagram-fa",
+  "description": "بستهٔ فارسی اینستاگرام برای Claude",
+  "owner": {"name": "hafamfamily", "url": "https://github.com/hafamfamily"},
+  "plugins": [
+    {
+      "name": "instagram-fa",
+      "description": "۱۳ اسکیل فارسی اینستاگرام: شناسنامهٔ پیج، برنامهٔ هفتگی با اکسل، تولید کاروسل/استوری/ریلز با تصویر فارسی، کپشن، انسانی‌ساز، تأیید پیش از انتشار.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/hafamfamily/instagram-fa"
+    }
+  ]
+}

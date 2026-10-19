@@ -1,0 +1,11 @@
+{
+  "type": "reel",
+  "title": "ریلز لیست قیمت",
+  "slides": [
+    {"layout": "reel-cover", "kicker": "هوش مصنوعی برای مغازه‌دارها", "title": "لیست قیمت در **۲ دقیقه**"},
+    {"layout": "reel-frame", "title": "لیست قیمت کل مغازه رو تو **۲ دقیقه** بساز", "dur": 3},
+    {"layout": "reel-frame", "title": "از لیست قدیمی **یه عکس** بگیر", "dur": 2.5},
+    {"layout": "reel-frame", "title": "بده به ChatGPT و بگو: **«جدولش کن»**", "dur": 3},
+    {"layout": "reel-frame", "style": "primary", "title": "کلمهٔ «لیست» رو کامنت کن", "body": "پرامپت کامل رو برات می‌فرستم", "dur": 3}
+  ]
+}
