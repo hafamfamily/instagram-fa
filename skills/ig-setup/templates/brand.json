@@ -1,14 +1,9 @@
 {
-  "name": "",
   "handle": "@your.page",
-  "theme": "light",
-  "bg": "#FBF7F1",
-  "surface": "#FFFFFF",
-  "text": "#1E2430",
-  "muted": "#6B7280",
-  "primary": "#0F766E",
-  "accent": "#F59E0B",
-  "on_primary": "#FFFFFF",
-  "digits": "fa",
-  "corner": 28
+  "theme": "paper",
+  "primary": "#1F6F5C",
+  "accent": "#F2B134",
+  "display_font": "",
+  "body_font": "",
+  "digits": "fa"
 }

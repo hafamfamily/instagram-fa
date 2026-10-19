@@ -13,7 +13,8 @@ page.py - مدیریت پیج‌ها و پوشه‌های کاری بستهٔ in
       swipe.md         فایل الهام از ig-viral
       insights.md      درس‌های ig-audit
 
-«خانه» به‌طور پیش‌فرض ~/instagram-fa است. با `page.py home <مسیر>` عوضش کن
+«خانه» در Claude دسکتاپ خودکار پوشهٔ instagram-fa داخل پوشهٔ وصل‌شدهٔ لپ‌تاپ است (مثلاً
+Documents/instagram-fa)؛ وگرنه ~/instagram-fa. با `page.py home <مسیر>` عوضش کن
 (مثلاً D:\\instagram)؛ انتخاب در ~/.instagram-fa.json ذخیره می‌شود.
 
 استفاده:
@@ -58,12 +59,62 @@ def save_conf(c):
         json.dump(c, f, ensure_ascii=False, indent=2)
 
 
+def _detect_home():
+    """محیط Claude دسکتاپ پوشه‌های لپ‌تاپ را زیر ~/mnt/<نام پوشه> وصل می‌کند و خود ماشین
+    هر جلسه از نو ساخته می‌شود؛ پس خانه را در پوشهٔ وصل‌شده پیدا می‌کنیم، نه در تنظیمات محلی."""
+    hm = os.path.expanduser("~")
+    mnt = os.path.join(hm, "mnt")
+    if os.path.isdir(mnt):
+        cands = []
+        for d1 in sorted(os.listdir(mnt)):
+            p1 = os.path.join(mnt, d1)
+            if not os.path.isdir(p1):
+                continue
+            if d1 == "instagram-fa" or os.path.exists(os.path.join(p1, ".igfa-home")):
+                cands.append(p1)
+            cands.append(os.path.join(p1, "instagram-fa"))
+        for c in cands:
+            if os.path.isdir(c):
+                return c
+        for d1 in ("Documents", "documents"):
+            if os.path.isdir(os.path.join(mnt, d1)):
+                return os.path.join(mnt, d1, "instagram-fa")
+    return os.path.join(hm, "instagram-fa")
+
+
 def home():
-    return os.environ.get("IGFA_HOME") or conf().get("home") or os.path.join(os.path.expanduser("~"), "instagram-fa")
+    return os.environ.get("IGFA_HOME") or conf().get("home") or _detect_home()
 
 
 def active():
-    return conf().get("active")
+    """پیج فعال در خود خانهٔ پیج‌ها ذخیره می‌شود (فایل .active) تا بین جلسه‌ها بماند."""
+    f = os.path.join(home(), ".active")
+    if os.path.exists(f):
+        with open(f, encoding="utf-8") as fh:
+            v = fh.read().strip()
+            if v:
+                return v
+    a = conf().get("active")
+    if a:
+        return a
+    h = home()  # اگر فقط یک پیج هست، همان
+    if os.path.isdir(h):
+        pages = [d for d in os.listdir(h) if os.path.exists(os.path.join(h, d, "page.md"))]
+        if len(pages) == 1:
+            return pages[0]
+    return None
+
+
+def set_active(slug):
+    os.makedirs(home(), exist_ok=True)
+    with open(os.path.join(home(), ".active"), "w", encoding="utf-8") as f:
+        f.write(slug)
+    try:
+        c = conf()
+        c["active"] = slug
+        save_conf(c)
+    except Exception:
+        pass
 
 
 def page_dir(slug=None):
@@ -87,6 +138,8 @@ def cmd_where(_):
         "plan": p and os.path.join(p, "plan"),
         "ready": p and os.path.join(p, "ready"),
         "skills_dir": os.path.dirname(HERE),
+        "fonts": os.path.join(home(), "fonts"),
+        "tools": os.path.join(home(), ".tools"),
     }, ensure_ascii=False, indent=2))
 
 
@@ -115,9 +168,7 @@ def cmd_new(a):
     if not os.path.exists(log):
         with open(log, "w", encoding="utf-8-sig") as f:
             f.write("تاریخ انتشار,نوع,عنوان,پوشه,لینک\n")
-    c = conf()
-    c["active"] = slug
-    save_conf(c)
+    set_active(slug)
     print(json.dumps({"created": p, "active": slug}, ensure_ascii=False))
 
 
@@ -126,9 +177,7 @@ def cmd_use(a):
     if not os.path.exists(os.path.join(page_dir(slug), "page.md")):
         print(f"پیج «{slug}» پیدا نشد. فهرست: page.py list")
         sys.exit(1)
-    c = conf()
-    c["active"] = slug
-    save_conf(c)
+    set_active(slug)
     print(f"پیج فعال: {slug}")
 
 
