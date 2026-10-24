@@ -9,6 +9,8 @@ page.py - مدیریت پیج‌ها و پوشه‌های کاری بستهٔ in
       plan/            برنامه‌های هفتگی (md و xlsx)
       content/         هر محتوا یک پوشه: spec.json، caption.txt، slides/، status.json
       ready/           محتوای تأییدشده و آمادهٔ انتشار دستی
+      publish.json     حالت تأیید (دستی/خودکار) و روش انتشار (دستی/API)
+      publish.log      گزارش انتشارهای خودکار
       published.csv    دفتر انتشار
       swipe.md         فایل الهام از ig-viral
       insights.md      درس‌های ig-audit
@@ -164,6 +166,11 @@ def cmd_new(a):
     tpl = os.path.join(HERE, "templates")
     shutil.copy(os.path.join(tpl, "page.md"), os.path.join(p, "page.md"))
     shutil.copy(os.path.join(tpl, "brand.json"), os.path.join(p, "brand.json"))
+    pub = os.path.join(p, "publish.json")
+    if not os.path.exists(pub):
+        with open(pub, "w", encoding="utf-8") as f:
+            json.dump({"mode": "manual", "method": "manual", "hosting": {"provider": "litterbox", "time": "24h"},
+                       "share_to_feed": True, "ai_label": True}, f, ensure_ascii=False, indent=2)
     log = os.path.join(p, "published.csv")
     if not os.path.exists(log):
         with open(log, "w", encoding="utf-8-sig") as f:
