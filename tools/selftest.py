@@ -11,6 +11,7 @@ ig-create است؛ بعد از هر تغییر، --sync را اجرا کن.
 """
 
 import argparse
+import json
 import filecmp
 import glob
 import os
@@ -187,6 +188,19 @@ def main():
         check("انسانی‌ساز: کلیشه‌ها حذف", rc == 0 and "دنیای امروز" not in clean and "ایفا" not in clean, out)
         rc, out = py(os.path.join(SK, "ig-human", "detect.py"), cap)
         check("پنل تشخیص اجرا شد", rc in (0, 1) and "امتیاز" in out, out[-300:])
+
+        print("\nگوینده")
+        sys.path.insert(0, os.path.join(SK, "ig-create"))
+        import tts
+        check("عدد به حروف", tts.clean("**۲ دقیقه**، ۹۰٪ و ۱۲.۵٪ و ۱,۲۵۰,۰۰۰") ==
+              "دو دقیقه، نود درصد و دوازده ممیز پنج درصد و یک میلیون و دویست و پنجاه هزار",
+              tts.clean("**۲ دقیقه**، ۹۰٪ و ۱۲.۵٪ و ۱,۲۵۰,۰۰۰"))
+        voice = os.path.join(tmp, "voice.wav")
+        rc, out = py(os.path.join(SK, "ig-create", "tts.py"), os.path.join(ex, "reel.json"), "--out", voice,
+                     "--engine", "tone", "--skip-cover")
+        vj = os.path.join(tmp, "voice.json")
+        ok = rc == 0 and os.path.exists(vj) and len(json.load(open(vj, encoding="utf-8"))["beats"]) == 4
+        check("ساخت صدا و زمان‌بندی بیت‌ها", ok, out[-300:])
 
         print("\nبرنامه و انتشار")
         xl = os.path.join(tmp, "plan.xlsx")

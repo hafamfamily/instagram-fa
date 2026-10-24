@@ -140,7 +140,27 @@ def main():
     if a.voice:
         vpath = resolve(a.voice, base)
         voice_len = duration(fp, vpath)
-        if a.sync == "silence":
+        vmeta = None
+        vjson = os.path.splitext(vpath)[0] + ".json"
+        if a.sync != "none" and os.path.exists(vjson):
+            try:
+                with open(vjson, encoding="utf-8") as f:
+                    vmeta = json.load(f)
+            except (ValueError, OSError):
+                vmeta = None
+        if vmeta and len(vmeta.get("beats", [])) == len(beats):
+            # زمان‌بندی دقیقِ tts.py: هر بیت از شروع جملهٔ خودش تا شروع جملهٔ بعدی
+            tb = vmeta["beats"]
+            starts = [0.0] + [max(0.0, tb[k]["start"] - 0.08) for k in range(1, len(tb))]
+            ends = starts[1:] + [tb[-1]["end"] + 0.6]
+            durs = [max(0.6, e - s) for s, e in zip(starts, ends)]
+            print(f"هماهنگ با زمان‌بندی گوینده: {len(tb)} جمله ← {len(beats)} بیت")
+        elif vmeta:
+            print(f"هشدار: voice.json {len(vmeta.get('beats', []))} جمله دارد ولی ویدیو {len(beats)} بیت؛ "
+                  f"--skip-cover در tts.py و video.py باید یکی باشد. هماهنگی با مکث‌ها انجام می‌شود.")
+        if vmeta and len(vmeta.get("beats", [])) == len(beats):
+            pass
+        elif a.sync == "silence":
             segs, total = speech_segments(ff, vpath)
             if len(segs) == len(beats):
                 starts = [0.0] + [segs[k][0] - 0.1 for k in range(1, len(segs))]

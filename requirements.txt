@@ -1,3 +1,8 @@
 pillow>=9
 openpyxl>=3
-# اختیاری: pillow-heif (عکس HEIC آیفون)، playwright
+# اختیاری:
+# pillow-heif      عکس HEIC آیفون
+# playwright       (لازم نیست؛ studio.py خودش Chromium قابل‌حمل می‌آورد)
+# edge-tts         گوینده‌ی فارسی طبیعی (آنلاین)
+# piper-tts        گوینده‌ی فارسی آفلاین
+# انتشار خودکار و تولید تصویر فقط کتابخانهٔ استاندارد پایتون لازم دارند؛ برای ویدیو ffmpeg.
