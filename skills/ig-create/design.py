@@ -124,7 +124,10 @@ def rich(text, T, words=False, keep_digits=False):
             body = lead + " ".join(segs).replace(" <br> ", "<br>") + trail
         else:
             body = body.replace("\n", "<br>")
-        out.append(f'<mark style="--i:{i}">{body}</mark>' if hl else body)
+        # عبارت تأکیدی کوتاه (تا ۳ کلمه) نباید بین دو خط بشکند؛ «۲ | دقیقه» خوانا نیست
+        keep = hl and "\n" not in part and len(part[2:-2].split()) <= 3
+        nw = ";white-space:nowrap" if keep else ""
+        out.append(f'<mark style="--i:{i}{nw}">{body}</mark>' if hl else body)
     return "".join(out)
 
 

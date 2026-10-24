@@ -86,11 +86,16 @@ def speech_segments(ff, path, noise="-32dB", min_sil=0.35):
 
 
 def resolve(path, base):
-    p = path if os.path.isabs(path) else os.path.join(base, path)
-    if not os.path.exists(p):
-        print(f"فایل پیدا نشد: {p}", file=sys.stderr)
-        sys.exit(2)
-    return p
+    """مسیر نسبی را اول نسبت به پوشهٔ spec و بعد نسبت به پوشهٔ جاری پیدا می‌کند."""
+    if os.path.isabs(path):
+        cands = [path]
+    else:
+        cands = [os.path.join(base, path), os.path.abspath(path)]
+    for p in cands:
+        if os.path.exists(p):
+            return p
+    print("فایل پیدا نشد: " + "  یا  ".join(cands), file=sys.stderr)
+    sys.exit(2)
 
 
 def main():
@@ -340,8 +345,9 @@ def main():
                         f"afade=t=out:st={max(0, total - 1.2):.2f}:d=1.2[mu]")
             labels.append("[mu]")
             n += 1
+        # apad: اگر صدا کوتاه‌تر از تصویر است، با سکوت پر شود تا -shortest انتهای ویدیو را نبُرد
         filt.append("".join(labels) + f"amix=inputs={len(labels)}:duration=longest:normalize=0,"
-                    f"atrim=0:{total:.3f}[a]")
+                    f"apad,atrim=0:{total:.3f}[a]")
         cmd += ["-filter_complex", ";".join(filt), "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac",
                 "-b:a", "160k", "-shortest", "-movflags", "+faststart", a.out]
         run(cmd, "صداگذاری")

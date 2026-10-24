@@ -142,7 +142,12 @@ def tokenize(text, digits_on=True):
             hl = part.startswith("**") and part.endswith("**") and len(part) > 4
             body = part[2:-2] if hl else part
             body = fa_digits(body, digits_on)
-            for w in body.split():
+            words = body.split()
+            if hl and 1 < len(words) <= 3:
+                # عبارت تأکیدی کوتاه یک واحد است و بین دو خط نمی‌شکند
+                out.append(Tok(" ".join(words), hl))
+                continue
+            for w in words:
                 out.append(Tok(w, hl))
     # کلمه‌های لاتین پشت‌سرهم یک واحد شوند تا ترتیبشان در خط راست‌به‌چپ برعکس نشود
     merged = []
