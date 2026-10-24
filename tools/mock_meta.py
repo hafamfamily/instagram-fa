@@ -13,6 +13,7 @@ mock_meta.py - سرور شبیه‌ساز API اینستاگرام و سرویس
   - POST /_fail?code=2&times=1  دفعه‌های بعدی ساخت ظرف را با این کد خطا رد می‌کند.
 """
 
+import base64
 import json
 import sys
 import threading
@@ -24,6 +25,16 @@ TOKEN = "TESTTOKEN_0123456789abcdef"
 UID = "17841400000000001"
 state = {"files": {}, "containers": {}, "media": {}, "log": [], "fail": None, "n": 0}
 lock = threading.Lock()
+
+
+def fake_image(w, h, fmt):
+    import io
+    from PIL import Image, ImageDraw
+    im = Image.new("RGB", (w, h), (200, 170, 120))
+    ImageDraw.Draw(im).ellipse([w * .3, h * .3, w * .7, h * .7], fill=(40, 90, 70))
+    b = io.BytesIO()
+    im.save(b, fmt)
+    return b.getvalue()
 
 
 def parse_multipart(body, ctype):
@@ -68,6 +79,13 @@ class H(BaseHTTPRequestHandler):
         path, q = self.params()
         with lock:
             state["log"].append({"m": "GET", "path": path, "q": {k: v for k, v in q.items() if k != "access_token"}})
+        if path.startswith("/pollinations/"):
+            w, h = int(q.get("width", 512)), int(q.get("height", 512))
+            state["log"].append({"m": "POLL", "prompt": urllib.parse.unquote(path.split("/", 2)[2]), "w": w, "h": h,
+                                 "auth": self.headers.get("Authorization", "")})
+            if "fail" in path:
+                return self.send(200, b"<html>rate limited</html>", "text/html")
+            return self.send(200, fake_image(w // 2, h // 2, "JPEG"), "image/jpeg")
         if path.startswith("/files/"):
             data = state["files"].get(path[7:])
             return self.send(200, data, "application/octet-stream") if data else self.send(404, "nf", "text/plain")
@@ -109,6 +127,14 @@ class H(BaseHTTPRequestHandler):
             url = f"http://127.0.0.1:{self.server.server_port}/files/{name}"
             return self.send(200, url if key == "fileToUpload" else {"secure_url": url},
                              "text/plain" if key == "fileToUpload" else "application/json")
+        if self.path.startswith("/cf/"):
+            body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
+            ok = self.headers.get("Authorization") == "Bearer CFTOKEN"
+            state["log"].append({"m": "CF", "prompt": body.get("prompt"), "acct": self.path.split("/")[2]})
+            if not ok:
+                return self.send(403, {"success": False, "errors": [{"message": "Authentication error"}]})
+            img = base64.b64encode(fake_image(1024, 1024, "JPEG")).decode()
+            return self.send(200, {"success": True, "result": {"image": img}})
         path, q = self.params()
         if path == "/_fail":
             state["fail"] = {"code": int(q.get("code", 2)), "times": int(q.get("times", 1))}

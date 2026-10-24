@@ -115,6 +115,22 @@ def api_test(tmp, env, page):
         rc, out = py(pub, "publish", d5, env=e, timeout=300)
         s5 = json.load(open(os.path.join(d5, "status.json"), encoding="utf-8"))
         check("تلاش دوباره بعد از رفع خطا", s5["status"] == "posted", out[-300:])
+        print("\nتصویر با هوش مصنوعی (سرور شبیه‌ساز)")
+        e2 = dict(e, IGFA_POLLINATIONS_URL=base + "/pollinations/", IGFA_CLOUDFLARE_URL=base + "/cf/{acct}/run")
+        gen = os.path.join(SK, "ig-create", "imagegen.py")
+        img = os.path.join(d4, "media", "hero.jpg")
+        rc, out = py(gen, "a tidy shop counter", "--out", img, "--size", "post", env=e2)
+        from PIL import Image
+        ok = rc == 0 and os.path.exists(img) and Image.open(img).size == (1080, 1350)
+        check("pollinations، اندازهٔ دقیق ۴:۵", ok, out)
+        st4 = json.load(open(os.path.join(d4, "status.json"), encoding="utf-8"))
+        check("علامت ai_generated در محتوا", st4.get("ai_generated") is True)
+        e3 = dict(e2, CF_ACCOUNT_ID="acc", CF_API_TOKEN="CFTOKEN")
+        img2 = os.path.join(tmp, "story.jpg")
+        rc, out = py(gen, "a phone on a desk", "--out", img2, "--size", "story", env=e3)
+        check("cloudflare، اندازهٔ ۹:۱۶", rc == 0 and Image.open(img2).size == (1080, 1920), out)
+        rc, out = py(gen, "x", "--out", os.path.join(tmp, "bad.jpg"), env=dict(e3, CF_API_TOKEN="WRONG"))
+        check("کلید اشتباه با پیام روشن رد می‌شود", rc != 0 and "دسترسی" in out, out)
     finally:
         srv.shutdown()
 

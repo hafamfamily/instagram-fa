@@ -15,6 +15,7 @@ ig_api.py - اتصال به API رسمی اینستاگرام (Instagram API wit
   python ig_api.py refresh --page <پیج>    تمدید توکن (۶۰ روز دیگر)؛ publish.py خودش هم خودکار تمدید می‌کند
   python ig_api.py logout --page <پیج>     پاک کردن توکن
   python ig_api.py secret ftp_password --page <پیج>   ذخیرهٔ رمز FTP (برای میزبانی روی هاست خودت)
+  python ig_api.py secret cf_token --page <پیج>       کلیدهای سرویس تصویر (cf_account_id، cf_token، pollinations_token)
 
 توکن هرگز در خروجی چاپ نمی‌شود و فقط در فایل رمزهای همان پیج می‌ماند.
 """
@@ -257,7 +258,7 @@ def main():
             p.add_argument("--from-env", help="توکن را از این متغیر محیطی بخوان (برای اسکریپت‌ها)")
         p.set_defaults(fn=fn)
     p = sub.add_parser("secret")
-    p.add_argument("name", choices=["ftp_password"])
+    p.add_argument("name", choices=["ftp_password", "cf_account_id", "cf_token", "pollinations_token"])
     p.add_argument("--page", required=True)
     p.set_defaults(fn=cmd_secret)
     a = ap.parse_args()
