@@ -1,5 +1,7 @@
 # instagram-fa — بستهٔ فارسی اینستاگرام برای Claude
 
+> **English:** A Claude plugin (13 skills) for running a Persian-language Instagram page end to end: page profile, weekly plan with a Jalali-calendar Excel sheet, carousels, stories and reels with correct right-to-left Persian rendering (Pillow + raqm, Vazirmatn), free Persian TTS and AI images, captions, a Persian "humanizer", and manual or automatic publishing via the official Instagram API. Persian adaptation of instagram-agent-skill by Jake Schincariol. MIT licensed.
+
 سیزده اسکیل که یک پیج اینستاگرام فارسی را از صفر تا انتشار جلو می‌برند: شناسنامهٔ پیج، برنامهٔ
 هفتگی با اکسل، ساختن کاروسل و استوری و ریلز با تصویر فارسی آماده، گوینده‌ی فارسی و تصویر
 هوش مصنوعی رایگان، کپشن، انسانی‌ساز فارسی، و انتشار — دستی یا خودکار با API رسمی اینستاگرام.
